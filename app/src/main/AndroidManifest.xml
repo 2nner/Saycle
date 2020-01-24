@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".CountdownActivity"></activity>
+        <activity android:name=".CountdownActivity" />
         <activity android:name=".SettingActivity" />
         <activity
             android:name=".MainActivity"
@@ -31,7 +31,7 @@
         </activity>
 
         <service
-            android:name=".BluetoothLeService"
+            android:name=".MyBluetoothLeService"
             android:enabled="true" />
     </application>
 

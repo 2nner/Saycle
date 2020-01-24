@@ -3,8 +3,6 @@ package com.khsbs.saycle
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattService
 import android.content.*
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -24,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
 
 
-// TODO : Service로 적용 및 MVVM 패턴으로 코드 리팩토링해보기
+// TODO : MVVM 패턴으로 코드 리팩토링해보기
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -37,8 +35,8 @@ class MainActivity : AppCompatActivity() {
         const val USER_EMERGENCY = 5
         const val TAG = "Saycle"
 
-        const val LIST_NAME = "NAME"
-        const val LIST_UUID = "UUID"
+        const val OFF = "OFF"
+        const val ON = "ON"
     }
 
     private lateinit var mBluetoothAdapter: BluetoothAdapter
@@ -46,21 +44,22 @@ class MainActivity : AppCompatActivity() {
     private var mPairedDeviceCount = 0
     lateinit var mDeviceName: String
     lateinit var mDeviceAddress: String
-    private var mBluetoothLeService: BluetoothLeService? = null
-    private var characteristicTX: BluetoothGattCharacteristic? = null
-    private var characteristicRX: BluetoothGattCharacteristic? = null
+    private var mBluetoothLeService: MyBluetoothLeService? = null
+//    private var characteristicTX: BluetoothGattCharacteristic? = null
+//    private var characteristicRX: BluetoothGattCharacteristic? = null
 
+    // BluetoothLeService가 연결/연결 해제되었을 때
     private val mServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
-            tv_main_remote.text = "OFF"
+            tv_main_remote.text = OFF
             mBluetoothLeService?.disconnect()
             mBluetoothLeService?.close()
             mBluetoothLeService = null
         }
 
         override fun onServiceConnected(componentName: ComponentName?, service: IBinder?) {
-            mBluetoothLeService = (service as BluetoothLeService.LocalBinder).service
-            if (!mBluetoothLeService!!.initialize()) {
+            mBluetoothLeService = (service as MyBluetoothLeService.LocalBinder).service
+            if (!mBluetoothLeService!!.init()) {
                 Log.e(TAG, "Unable to initialize Bluetooth")
             } else {
                 Log.d(TAG, "Initialize Bluetooth")
@@ -73,15 +72,16 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 MyBluetoothLeService.ACTION_GATT_CONNECTED -> {
-                    tv_main_remote.text = "ON"
-                    invalidateOptionsMenu()
+                    tv_main_remote.text = ON
                 }
                 MyBluetoothLeService.ACTION_GATT_DISCONNECTED ->
-                    tv_main_remote.text = "OFF"
+                    tv_main_remote.text = OFF
+                /*
                 MyBluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED ->
                     displayGattServices(mBluetoothLeService?.supportedGattServices)
                 MyBluetoothLeService.ACTION_DATA_AVAILABLE ->
-                    displayData()
+                    displayGattServices(mBluetoothLeService?.supportedGattServices)
+                */
             }
         }
     }
@@ -161,9 +161,9 @@ class MainActivity : AppCompatActivity() {
 
         if (mBluetoothLeService != null) {
             if (mBluetoothLeService!!.connect(mDeviceAddress))
-                tv_main_remote.text = "ON"
+                tv_main_remote.text = ON
             else
-                tv_main_remote.text = "OFF"
+                tv_main_remote.text = OFF
         }
     }
 
@@ -186,7 +186,6 @@ class MainActivity : AppCompatActivity() {
             COUNTDOWN_REQUEST ->
                 when (resultCode) {
                     USER_EMERGENCY -> {
-                        Log.d(TAG, "EMERGENCY")
                         sendMessage()
                     }
                 }
@@ -245,7 +244,7 @@ class MainActivity : AppCompatActivity() {
     private fun connectToSelectedDevice(deviceInfo: Pair<String, String>) {
         mDeviceName = deviceInfo.first
         mDeviceAddress = deviceInfo.second
-        Log.d("device", "$mDeviceName $mDeviceAddress")
+        Log.d(TAG, "Connect to $mDeviceName $mDeviceAddress")
         val gattServiceIntent = Intent(baseContext, MyBluetoothLeService::class.java)
         bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE)
     }
@@ -259,11 +258,7 @@ class MainActivity : AppCompatActivity() {
         return intentFilter
     }
 
-    private fun displayData() {
-        startActivityForResult(Intent(this, CountdownActivity::class.java), COUNTDOWN_REQUEST)
-    }
-
-    private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
+    /*private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
         if (gattServices == null) return
         var uuid: String?
         val unknownServiceString = "unknown service"
@@ -287,7 +282,7 @@ class MainActivity : AppCompatActivity() {
                 mBluetoothLeService?.setCharacteristicNotification(characteristicRX, true)
             }
         }
-    }
+    }*/
 
     private fun sendMessage() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS)
