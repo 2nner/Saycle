@@ -1,4 +1,4 @@
-package com.khsbs.saycle
+package com.khsbs.saycle.ui.main
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
@@ -18,6 +18,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.khsbs.saycle.R
+import com.khsbs.saycle.ui.setting.SettingActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
 
@@ -51,7 +53,8 @@ class MainActivity : AppCompatActivity() {
     // BluetoothLeService가 연결/연결 해제되었을 때
     private val mServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
-            tv_main_remote.text = OFF
+            tv_main_remote.text =
+                OFF
             mBluetoothLeService?.disconnect()
             mBluetoothLeService?.close()
             mBluetoothLeService = null
@@ -72,10 +75,12 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 MyBluetoothLeService.ACTION_GATT_CONNECTED -> {
-                    tv_main_remote.text = ON
+                    tv_main_remote.text =
+                        ON
                 }
                 MyBluetoothLeService.ACTION_GATT_DISCONNECTED ->
-                    tv_main_remote.text = OFF
+                    tv_main_remote.text =
+                        OFF
                 /*
                 MyBluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED ->
                     displayGattServices(mBluetoothLeService?.supportedGattServices)
@@ -161,9 +166,11 @@ class MainActivity : AppCompatActivity() {
 
         if (mBluetoothLeService != null) {
             if (mBluetoothLeService!!.connect(mDeviceAddress))
-                tv_main_remote.text = ON
+                tv_main_remote.text =
+                    ON
             else
-                tv_main_remote.text = OFF
+                tv_main_remote.text =
+                    OFF
         }
     }
 

@@ -1,4 +1,4 @@
-package com.khsbs.saycle
+package com.khsbs.saycle.ui.main
 
 import android.app.Service
 import android.bluetooth.*
@@ -7,6 +7,8 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import com.khsbs.saycle.ui.countdown.CountdownActivity
+import com.khsbs.saycle.util.Attr
 import java.util.*
 
 class MyBluetoothLeService : Service() {
@@ -22,7 +24,8 @@ class MyBluetoothLeService : Service() {
         private var mBluetoothAdapter: BluetoothAdapter? = null
         private var mBluetoothDeviceAddress: String? = null
         private var mBluetoothGatt: BluetoothGatt? = null
-        private var mConnectionState = STATE_DISCONNECTED
+        private var mConnectionState =
+            STATE_DISCONNECTED
 
         const val ACTION_GATT_CONNECTED =
             "com.example.bluetooth.le.ACTION_GATT_CONNECTED"
@@ -44,8 +47,10 @@ class MyBluetoothLeService : Service() {
             val intentAction: String
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
-                    intentAction = ACTION_GATT_CONNECTED
-                    mConnectionState = STATE_CONNECTED
+                    intentAction =
+                        ACTION_GATT_CONNECTED
+                    mConnectionState =
+                        STATE_CONNECTED
                     broadcastUpdate(intentAction)
                     Log.i(TAG, "Connected to GATT server.")
                     Log.i(
@@ -54,8 +59,10 @@ class MyBluetoothLeService : Service() {
                     )
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
-                    intentAction = ACTION_GATT_DISCONNECTED
-                    mConnectionState = STATE_DISCONNECTED
+                    intentAction =
+                        ACTION_GATT_DISCONNECTED
+                    mConnectionState =
+                        STATE_DISCONNECTED
                     Log.i(TAG, "Disconnected from GATT server.")
                     broadcastUpdate(intentAction)
                 }
@@ -172,7 +179,8 @@ class MyBluetoothLeService : Service() {
         if (mBluetoothDeviceAddress != null && address == mBluetoothDeviceAddress
             && mBluetoothGatt != null) {
             return if (mBluetoothGatt!!.connect()) {
-                mConnectionState = STATE_CONNECTING
+                mConnectionState =
+                    STATE_CONNECTING
                 true
             } else {
                 false
@@ -182,7 +190,8 @@ class MyBluetoothLeService : Service() {
         // 디바이스 연결이 처음일 때 - getRemoteDevice(address)가 null 일때 false 반환
         mBluetoothAdapter!!.getRemoteDevice(address).let {
             mBluetoothGatt = it.connectGatt(this, false, mGattCallback)
-            mConnectionState = STATE_CONNECTING
+            mConnectionState =
+                STATE_CONNECTING
             return true
         }
     }
