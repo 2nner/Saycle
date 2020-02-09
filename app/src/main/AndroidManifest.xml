@@ -18,16 +18,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.countdown.CountdownActivity" />
-        <activity android:name=".ui.setting.SettingActivity" />
-        <activity
-            android:name=".ui.main.MainActivity"
+
+        <activity android:name=".ui.countdown.CountdownActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.setting.SettingActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
         </activity>
 
         <service

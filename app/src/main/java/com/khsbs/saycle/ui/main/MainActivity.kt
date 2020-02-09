@@ -12,21 +12,24 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.khsbs.saycle.BR
 import com.khsbs.saycle.R
+import com.khsbs.saycle.databinding.ActivityMainBinding
+import com.khsbs.saycle.ui.BaseActivity
+import com.khsbs.saycle.ui.SharedViewModel
 import com.khsbs.saycle.ui.setting.SettingActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
 
 
 // TODO : MVVM 패턴으로 코드 리팩토링해보기
-class MainActivity : AppCompatActivity() {
-
+class MainActivity : BaseActivity<ActivityMainBinding, SharedViewModel>() {
     companion object {
         const val GPS_ENABLE_REQUEST_CODE = 2001
         const val PERMISSIONS_REQUEST_CODE = 100
@@ -39,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         const val OFF = "OFF"
         const val ON = "ON"
+        const val DISCONNECTED = "DISCONNECTED"
     }
 
     private lateinit var mBluetoothAdapter: BluetoothAdapter
@@ -47,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mDeviceName: String
     lateinit var mDeviceAddress: String
     private var mBluetoothLeService: MyBluetoothLeService? = null
+    private val mViewModel: SharedViewModel by viewModels()
 //    private var characteristicTX: BluetoothGattCharacteristic? = null
 //    private var characteristicRX: BluetoothGattCharacteristic? = null
 
@@ -91,7 +96,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
+    override fun getLayoutId(): Int {
+        return R.layout.activity_main
+    }
+
+    override fun getViewModel(): Class<SharedViewModel> {
+        return SharedViewModel::class.java
+    }
+
+    override fun getBindingVariable(): Int {
+        return BR.viewmodel
+    }
+
+    override fun initObserver() {
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -141,11 +161,11 @@ class MainActivity : AppCompatActivity() {
         switch_main.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 checkBluetooth()
-                tv_main_remote.text = "DISCONNECTED"
+                tv_main_remote.text = DISCONNECTED
             } else {
                 mBluetoothLeService?.disconnect()
                 mBluetoothLeService?.close()
-                tv_main_remote.text = "OFF"
+                tv_main_remote.text = OFF
             }
         }
 
@@ -307,9 +327,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO : FusedLocationProvider로 기기 현재위치 가져오기 구현 후 적용
-    private fun getCurrentAddress(latitude: Double, longitude: Double) {
+    /*private fun getCurrentAddress(latitude: Double, longitude: Double) {
 
-    }
+    }*/
 
     private fun message(number: String, text: String) {
         val smsManager = SmsManager.getDefault()
