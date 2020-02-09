@@ -114,7 +114,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, SharedViewModel>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         Glide.with(baseContext)
             .asGif()
